@@ -16,15 +16,20 @@ and returns a corresponding random bit string in
 the seed space.
 """
 def encode(m, pfxns):
+    check = str(luhn(m[:-1]))
+    if check != m:
+        print('Invaid Card Number!')
+        return -1
+    if pfxns.prob_distr(m) == 0:
+        return -1
     # get range of seed space to pick random string from
+    print('True seed probability location: ', pfxns.cumul_distr(m))
     start = pfxns.cumul_distr(m) * seed_space
-
     end = int(start + pfxns.prob_distr(m)*seed_space) - 1 
     start = int(start)
 
     # pick random string from corresponding seed space
     seed = int(random.random() * (end-start) + start)
-    
     return seed
 
 """
@@ -56,8 +61,8 @@ search to find corresponding message.
 def decode(s, pfxns):
     table = pfxns.get_inverse_cumul_distr_samples()
     seed_loc = float(s)/seed_space
-    print((seed_loc))
-    (prev_value, prev_msg) = binary_search(table, 0, len(table), seed_loc)
+    print('Guessed seed probability location: ', seed_loc)
+    _, prev_msg = binary_search(table, 0, len(table), seed_loc)
     next_msg = pfxns.next_message(prev_msg)
     next_value = pfxns.cumul_distr(next_msg)
     if next_msg == prev_msg: # at max message
@@ -65,7 +70,7 @@ def decode(s, pfxns):
     # begin linear scan to find which range seed s falls in
     while seed_loc >= next_value:
         # update prev and next
-        (prev_value, prev_msg) = (next_value, next_msg)
+        _, prev_msg = (next_value, next_msg)
         next_msg = pfxns.next_message(prev_msg)
         next_value = pfxns.cumul_distr(next_msg)
     
@@ -77,7 +82,7 @@ import math
 # helper function to get denominator of prefix probabilities
 def getTotalProbability(prefixes):
     sum = 0
-    for prefix,val in prefixes.items():
+    for _,val in prefixes.items():
         sum += val[2]
     return sum
 
@@ -109,10 +114,14 @@ def create_inverse_sample_table():
 # given random message string as int, return int message with last digit appended such that new string is Luhn-valid
 def luhn(m):
     sum = 0
-    for i in list(str(m)):
-        sum += int(i)
+    for parity, i in enumerate(list(str(m))):
+        if parity%2 == 0:
+            num = int(i)
+            sum += (num*2)//10 + (num*2)%10 if num*2 >= 10 else num*2
+        else:
+            sum += int(i)
     last = (9 * sum) % 10
-    return m * 10 + last
+    return int(m) * 10 + last
 
 class CreditCardProbabilityFxns(MessageSpaceProbabilityFxns):
 
@@ -139,7 +148,7 @@ class CreditCardProbabilityFxns(MessageSpaceProbabilityFxns):
                     numRandomDigs = len(randomDigs)
                     prob = prefixProb * math.pow(10,-numRandomDigs)
                     return prob
-            print ("Invalid credit card")
+            print ("Credit card not in list")
             return 0
 
         # define cumul distribution fxn
