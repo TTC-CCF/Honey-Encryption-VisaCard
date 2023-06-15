@@ -12,10 +12,9 @@ with open('bin.txt','r') as bin:
 
 
 
-credit_card_example = '4117700001669792'
-secret_key = 2048101736
-#guess_key =  2048101736616812280
-guess_key = 2048280000
+credit_card_example = '4720030000000016'
+secret_key = 2048197655563215
+guess_key = 204197554
 
 
 if (len(sys.argv)>1):
@@ -43,8 +42,9 @@ if seed != -1:
     decipher_seed = guess_key ^ ciphertext
     
     # print (seed, decipher_seed)
-    print ("HEX(SEED): "+str(hex(seed)))
     print ("CIPHERTEXT: "+str(ciphertext))
+
+    print ("HEX(SEED): "+str(hex(seed)))
     print ("HEX(GUESSED_SEED): "+str(hex(decipher_seed)))
     print ("")
     

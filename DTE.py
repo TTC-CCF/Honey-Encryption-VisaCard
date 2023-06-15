@@ -73,6 +73,7 @@ def decode(s, pfxns):
         _, prev_msg = (next_value, next_msg)
         next_msg = pfxns.next_message(prev_msg)
         next_value = pfxns.cumul_distr(next_msg)
+        # print(next_value, next_msg)。
     
     return prev_msg
 
@@ -165,7 +166,7 @@ class CreditCardProbabilityFxns(MessageSpaceProbabilityFxns):
                     prefixCumul = self.prefix_cumul[prefixStr]
                     totalCumul = prefixCumul + float(randomDigs)*pow(10,-numRandomDigs) / self.total_prob
                     return totalCumul
-            print ("Invalid credit card")
+            print ("Invalid credit card")   
             return -1
 
         # define next message fxn

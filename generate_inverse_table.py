@@ -18,6 +18,7 @@ total_prob = getTotalProbability(prefixes)
 prefix_order = create_prefix_ordered_list(prefixes)
 prefix_cumul = create_cumul_fxn(prefix_order, prefixes, total_prob)
 table = open('inverse_table.txt','w')
+table.write('[')
 for prefix in prefix_order:
     #'******'
     prefixList = list(prefix)
@@ -34,3 +35,4 @@ for prefix in prefix_order:
         numRandomDigs = prefix_length - 7
         cumul_prob = prefix_cumul_prob + float(randomDigs)*pow(10,-numRandomDigs) / total_prob
         table.write('('+str(cumul_prob)+',"'+str(m)+'"),\n')
+table.write(']')
